@@ -113,7 +113,6 @@ returns a proposition about that value.
 #reduce isZero 1 -- the proposition 0 = 1
 #reduce isZero 2 -- the proposition 0 = 2
 
-
 /-
 We can rewrite this function into
 an equivalent form in the usual way,
@@ -189,7 +188,7 @@ theorem
 satIsWeekend : isWeekend Saturday :=
 begin
 unfold isWeekend,   -- unfold tactic
-apply or.inl,       -- backwards reasoning
+apply or.intro_left,-- backwards reasoning
 apply rfl           -- finally, equality
 end
 
@@ -203,7 +202,7 @@ the predicate (corresponding proposition)
 is true. 
 
 For example, the predicate, isZero(n),
-spefifies the set containing only the 
+specifies the set containing only the 
 natural number, zero. A predicate, 
 isEven(n), could specify the set of 
 even natural numbers. Etc. We explore
