@@ -15,13 +15,17 @@ So, speaking informally, for example,
 fromCharlottesville(Kevin) could be read
 as the proposition "Kevin is from Cville".
 fromCharlottesville(Mary) is a different
-proposition, "Mary is from Cville."
+proposition, "Mary is from Cville." A
+predicate thus gives rise to a whole
+family of propositions, one for each
+possible combination of argument
+values.
 
 Not every proposition derived by applying
 a predicate to one or more arguments will 
 be true. Rather, the predicate in effect
 "picks out" the argument values for which
-the corresponding proposition is true and
+the corresponding proposition is true, and
 thereby identifies them as having a 
 property of interest, such as the property
 of "being from Cville." 
@@ -44,8 +48,46 @@ numbers for which the corresponding
 propositions are true. The predicate
 "picks out" the set of numbers with the
 given property.
-
 -/
+
+/-
+Here's one way to define an evenness
+predicate. It uses the existential 
+quantifier, ∃, which we study in detail
+in the next unit. You can read this as
+saying  n is even if there exists an m
+such that 2 * m = n. 
+-/
+def isEven (n :ℕ) : Prop :=
+  ∃ m : nat, 2 * m = n
+
+/-
+Note: isEven isn't a proposition, it's
+a property!
+-/
+
+#check isEven
+
+/-
+On the other hand, (isEven 6) is a 
+proposition, namely the proposition
+that there is some value, m, such 
+that 2 * m = n. 
+-/
+
+#reduce isEven 6
+
+/-
+We can even prove it.
+-/
+
+example : isEven 6 :=
+begin
+unfold isEven,
+apply exists.intro 3,
+apply rfl,
+end
+
 
 /-
 We define a predicate as a function 
@@ -65,6 +107,19 @@ Here's such a predicate/function.
 -/
 
 def isZero (n : ℕ): Prop := (0 = n)
+
+def nil (n : ℕ) : Prop :=
+  false
+
+def allN (n : ℕ) := true
+
+example : allN 8 := true.intro
+
+example : ¬ (nil 8) := 
+begin
+assume p,
+exact false.elim p,
+end
 
 /-
 First, let's check the type of the 
@@ -182,10 +237,26 @@ every value of its argument(s).
 EXERCISE: What are other properties
 of natural numbers that could be
 expressed as predicates?
+-/
+
+def isMultOf8: ℕ → Prop :=
+  λ n : nat,
+    ∃ m : nat, 8 * m = n
+
+example : isMultOf8 64 := 
+begin
+unfold isMultOf8,
+apply exists.intro 8,
+apply rfl,
+end
+
+/-
 
 EXERCISE: Define a predicate that is
 true for every natural number.
+-/
 
+/-
 EXERCISE: Define a predicate that is
 false for every natural number.
 -/
@@ -206,8 +277,8 @@ of being a weekend day.
 -/
 
 inductive day : Type
-| Monday
-| Tuesday
+| Monday : day
+| Tuesday : day 
 | Wednesday
 | Thursday
 | Friday
@@ -232,7 +303,7 @@ theorem satIsWeekend: isWeekend Saturday :=
 begin
   unfold isWeekend,   -- unfold tactic
   apply or.intro_left,-- backwards reasoning
-  apply rfl           -- finally, equality
+  apply rfl  ,         -- finally, equality
 end
 
 
