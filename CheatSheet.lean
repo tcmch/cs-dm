@@ -1,14 +1,46 @@
 /-
 This cheat sheet summarizes the 
-introduction and elimination
-rules for each connective and
-quantifier in predicate logic,
-used, respectively, to construct
-and to take apart, or destruct,
-proofs of propositions built 
-using these connectives and 
-quantifiers. 
+crucial introduction and elimination
+reasoning rules for each connective 
+and quantifier in predicate logic.
+
+* true
+* false
+* P ∧ Q
+* ∀ p : P, Q  -- predicate Q usually involves p
+* P → Q (view as function type)
+* P → Q (viewed as implication)
+* ¬ P
+* P ↔ Q
+* P ∨ Q
+* ∃ p : P, Q  -- predicate Q usually involves p
+
+Introduction rules are used when
+your goal is to prove a proposition 
+(below the line or to the right of 
+the turnstile) that contains a given 
+connective or quantifier. For example,
+you would use the introduction rule
+for ∧ to prove a propopsition of the
+form, P ∧ Q.
+
+Elimination rules are used to prove
+something else when you are given,
+as an assumption, a proof of a 
+proposition that uses a given 
+connective or quantifier.  You would
+use an elimination rule for ∧, for
+example to prove P when you already
+have a proof of P ∧ Q. 
 -/
+
+/- *****************************************-/
+/- *****************************************-/
+/- *****************************************-/
+
+
+variables P Q : Type
+#check (P → Q)
 
 /- **** -/
 /- true -/
@@ -34,7 +66,9 @@ proof of true very often in
 practice.
 -/
 
+/- ----------------- -/
 /- true introduction -/
+/- ----------------- -/
 
 
 theorem trueIsTrue : true := 
@@ -46,6 +80,27 @@ begin
 exact (true.intro),
 end
 
+/- ----------------- -/
+/- true elimination  -/
+/- ----------------- -/
+
+/-
+A proof of true, true.intro, doesn't tell
+you anything meaningful, so a proof of true
+never really helps to prove anything else.
+A proof of true is both free and worthless.
+Elimination rules let you deduce something
+meaningful from a proof of something else.
+For example from a proof of P ∧ Q one can
+obtain a proof of P (which can be useful!).
+There is thus no meaningful elimination 
+rule for true.
+-/
+
+
+/- *****************************************-/
+/- *****************************************-/
+/- *****************************************-/
 
 /-*******-/
 /- false -/
@@ -54,30 +109,44 @@ end
 /-
 The proposition, false, has no
 proofs, and can thus be judged 
-to be false. Because there is 
-no proof of false, there is no
-introduction rule for false. On
-the other hand, it often happens
-in real proofs that one ends up
-with inconsistent assumptions, 
-which shows that such a case in
-reality can't occur. When one
-ends up in such a situation, a
-proof of false can be derived
-from the inconsistency, and the
-false elimination rule can then
-be used to finish the proof of
-the current proof goal.
+to be false. 
+-/
+
+/- false introduction -/
+
+/-
+Because there is no proof of false, 
+there is no introduction rule for 
+false. 
 -/
 
 /- false elimination -/
 
 /-
-From an assumed proof of false
-(or from a proof of false that
-is obtained from a contradiction), 
-any proposition, P, can be proved
-by simply applying false.elim to
+On the other hand, it often happens
+in real proofs that one ends up with 
+inconsistent assumptions. When this
+happens, it shows that in reality 
+such a case can't occur. 
+
+When one ends up in such a situation, 
+a proof of false can be derived from 
+the contradiction, and the elimination 
+rule for false can then be used to 
+finish off the proof of the current 
+proof goal.
+
+It might seem a bit like magic that 
+false elimination can be used to prove
+anything at all, but all that it really
+says is "we can safely ignore this case
+because it can never really happen."
+
+What the rule technically says is that
+from an assumed proof of false (or from 
+a proof of false that is obtained from 
+a contradiction), any proposition, P, 
+can be proved by applying false.elim to
 the proof of false.
 
   P : Prop, f : false
@@ -88,19 +157,22 @@ the proof of false.
 def fromFalse (P: Prop) (f: false) : P :=
     false.elim f
 
-theorem fromFalse': 
-  ∀ P : Prop, false → P := 
+theorem fromFalse': ∀ P : Prop, false → P := 
 λ P f, 
     false.elim f
 
-theorem  fromFalse'': 
-  ∀ P : Prop, false → P := 
+theorem  fromFalse'': ∀ P : Prop, false → P := 
 begin
-  assume P f,
+  assume P,
+  assume f,
   show P,
   from false.elim f,
 end
 
+
+/- *****************************************-/
+/- *****************************************-/
+/- *****************************************-/
 
 /-**** -/
 /- and -/
@@ -134,14 +206,13 @@ and right elimination rules, respectively.
           q : Q
 -/
 
-/- and introduction -/
 
--- P → Q → P ∧ Q
+/- and introduction -/
 
 def PandQ (P Q : Prop) (p: P) (q: Q) : P ∧ Q :=
     and.intro p q
 
-#check PandQ
+#check PandQ -- P → Q → P ∧ Q
 
 theorem PandQ' : ∀ ( P Q : Prop ), P → Q → P ∧ Q  := 
 λ P Q p q, 
@@ -155,6 +226,7 @@ begin
   show P ∧ Q,
   from ⟨ p, q ⟩, -- again shorthand for and.intro p q
 end
+
 
 /- and elimination -/
 
@@ -170,7 +242,7 @@ theorem PfromPandQ' : ∀ { P Q : Prop }, P ∧ Q → P :=
 
 theorem QfromPandQ' : ∀ { P Q : Prop }, P ∧ Q → Q := 
 λ P Q pq, 
-    pq.right -- shorthand for and.elim_left pq
+    pq.right -- shorthand for and.elim_right pq
 
 theorem PfromPandQ'' : ∀ { P Q : Prop }, P ∧ Q → P := 
 begin
@@ -186,6 +258,10 @@ begin
   from pq.right
 end 
 
+
+/- *****************************************-/
+/- *****************************************-/
+/- *****************************************-/
 
 /- ********* -/
 /- functions -/
@@ -241,6 +317,7 @@ def inc : ℕ → ℕ := λ n : ℕ, (n + 1 : ℕ)
 
 #check inc  -- type: ℕ → ℕ 
 #reduce inc -- value/proof: λ n : ℕ, n + 1
+#check inc 3
 #reduce inc 3
 
 /-
@@ -336,7 +413,7 @@ of type R).
 Here's an example.
 -/
 
-def plus (n m: ℕ) := n + m
+def plus (n m: ℕ) : ℕ := n + m
 
 #check plus
 #reduce plus
@@ -373,6 +450,10 @@ p : P, will produce a value of type Q.
 #reduce inc 3
 
 
+
+/- *****************************************-/
+/- *****************************************-/
+/- *****************************************-/
 
 /- *********** -/
 /- implication -/
@@ -411,6 +492,9 @@ def falseImpliesTrue (f : false) : true :=
 
 example : false → true :=
     λ f : false, true.intro
+
+example : false → true :=
+    falseImpliesTrue
 
 /- → implication elimination -/
 
@@ -526,11 +610,15 @@ def forallElim (p2q: ∀ n : nat, n = n) (p : nat) : p = p :=
 
 def forallElim' (p2q: ∀ n : nat, n = n) (p : nat) : p = p :=
 begin
-exact (p2q p)
+  exact (p2q p)
 end
 
 #reduce forallElim allNEqualSelf 7
 
+
+/- *****************************************-/
+/- *****************************************-/
+/- *****************************************-/
 
 /- ************** -/
 /- ** Negation ** -/
@@ -561,7 +649,7 @@ This is of course just the principle of proof
 by negation, equivalent to the introduction 
 rule for false.
 
-P: Prop, f2p : false → P
+P: Prop, f2p : P → false
 ------------------------ false introduction
         np : ¬ P
 
@@ -602,13 +690,14 @@ a rule for double negation introduction,
 though not a rule that is commonly needed.
 -/
 
-theorem doubleNegIntro : ∀ P : Prop, P → ¬ ¬ P :=
+theorem doubleNegIntro : ∀ P : Prop, P → ¬¬P :=
 begin
   assume P : Prop,
   assume p : P,
-  assume np : ¬P, -- ¬ ¬ P means ¬ P → false, so assume ¬ P
+  assume np : ¬P, -- ¬¬P means ¬P → false, so assume ¬P
   show false,
-  from np p
+  --from np p,
+  contradiction,
 end
 
 theorem doubleNegIntro' : ∀ P : Prop, P → ¬¬P :=
@@ -635,10 +724,11 @@ the excluded middle, or equivalent.
 example: ∀ P : Prop, ¬¬P → P :=
 begin
   assume P nnp,
-  -- no way to get from ¬¬P to P
-  -- stuck and giving up on this proof
-  sorry
-end 
+  /- 
+  No way to get from ¬¬P to P.
+  stuck and giving up on this proof.
+  -/
+  end 
 
 /-
 However, if we accept the axiom of the 
@@ -684,11 +774,11 @@ begin
     begin
         -- preview: we study case analysis later
         -- proof by case analysis for P
-        cases (em P), -- (em P) is (P ∨ ¬ P)
+        cases (em P) with pf_P pf_nP, -- (em P) is (P ∨ ¬ P)
         -- case with P is assumed to be true
-        exact h,
+        exact pf_P,
         -- case with P is assumed to be false
-        exact false.elim (nnp h)
+        exact false.elim (nnp pf_nP)
         -- em says there are no other cases
     end,
 end 
@@ -722,6 +812,10 @@ case is true, whereas a constructive proof
 does.
 -/
 
+
+/- *****************************************-/
+/- *****************************************-/
+/- *****************************************-/
 
 /- *************** -/
 /- bi-implication  -/
@@ -771,6 +865,16 @@ theorem iffIntro':
 λ P Q pq qp, 
     iff.intro pq qp
 
+theorem iffIntro'':
+  ∀(P Q: Prop), (P → Q) → (Q → P) → (P ↔ Q) :=
+begin
+  assume P Q : Prop,
+  assume p2q q2p,
+  apply iff.intro,
+    exact p2q,
+    
+    exact q2p
+end
 
 /- iff elimination -/
 
@@ -802,6 +906,11 @@ theorem iffElimRight:
     iff.elim_right bi
 
 
+
+/- *****************************************-/
+/- *****************************************-/
+/- *****************************************-/
+
 /- **************** -/
 /- or (disjunction) -/
 /- **************** -/
@@ -832,6 +941,12 @@ theorem orIntroLeft (P Q : Prop) (p : P) : P ∨ Q :=
 theorem orIntroLeft': forall P Q: Prop, P → (P ∨ Q) :=
 λ P Q p, 
     or.inl p -- shorthand
+
+theorem orIntroLeft'' (P Q : Prop) (p : P) : P ∨ Q :=
+begin
+  apply or.intro_left,
+  assumption
+end
 
 theorem orIntroRight: forall P Q: Prop, Q → (P ∨ Q) :=
 λ P Q q, 
@@ -897,7 +1012,6 @@ begin
     end  
 end
 
-
 -- Same proof, different identifiers
 theorem orElimExample' : 
 forall Rain Hydrant Wet: Prop, 
@@ -916,7 +1030,6 @@ begin
   cases RainingOrHydrantRunning with raining running,
     show Wet, from RainMakesWet raining,
     show Wet, from HydrantMakesWet running,
-
 end
 
 /-
@@ -953,6 +1066,11 @@ this trick was used to prove one of
 the DeMorgan laws and the validity of
 double negation elimination.
 -/
+
+
+/- *****************************************-/
+/- *****************************************-/
+/- *****************************************-/
 
 /- ********** -/
 /- Predicates -/
@@ -1069,6 +1187,19 @@ by making both values to be compared into
 arguments.
 -/
 
+def nEqm (n m: ℕ) : Prop := n = m
+
+def isSquare (n m : ℕ) := n^2 = m
+
+#check isSquare
+#check isSquare 3 9
+#reduce isSquare 3 9
+
+
+
+/- *****************************************-/
+/- *****************************************-/
+/- *****************************************-/
 
 /- ******* -/
 /- Exists  -/
@@ -1218,8 +1349,8 @@ we will start by assuming its premises: that a is some
 value of type T and that we have a proof that a has the
 properties P and S.
 -/
-  assume a : T,
-  assume pfa : P a ∧ S a,
+  assume w : T,
+  assume pfa : P w ∧ S w,
 
 /- 
 Given these assumption we now need to show the final
@@ -1234,6 +1365,6 @@ That is then all that we need to prove the final goal,
         have pa := pfa.left,
         have qa := pfa.right,
         have qp := and.intro qa pa,
-        exact exists.intro a qp
-    end
-end
+        exact exists.intro w qp,
+    end,
+end 

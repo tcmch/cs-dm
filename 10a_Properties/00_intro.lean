@@ -243,9 +243,21 @@ def isMultOf8: ℕ → Prop :=
   λ n : nat,
     ∃ m : nat, 8 * m = n
 
+def nIsMultOfm: ℕ → ℕ → Prop :=
+  λ n m, 
+    ∃ k, n = k * m
+  
+
 example : isMultOf8 64 := 
 begin
 unfold isMultOf8,
+apply exists.intro 8,
+apply rfl,
+end
+
+example : nIsMultOfm 64 8 := 
+begin
+unfold nIsMultOfm,
 apply exists.intro 8,
 apply rfl,
 end
@@ -305,6 +317,36 @@ begin
   apply or.intro_left,-- backwards reasoning
   apply rfl  ,         -- finally, equality
 end
+
+/-
+EXERCISE: Express the property, 
+of natural numbers, of being a 
+perfect square. For example, 9
+is a perfect square, because 3
+is a natural number such that 
+3 * 3 = 9. By contrast, 12 is
+not a perfect square, as there 
+does not exist a natural number
+that squares to 12. 
+
+State and prove the proposition 
+that 9 is a perfect square.
+-/
+
+
+
+
+-- Answer
+
+def isASquare: ℕ → Prop :=
+    λ n, exists m, n = m ^ 2
+
+theorem isPS9 : isASquare 9 :=
+begin
+  unfold isASquare,
+  exact exists.intro 3 (eq.refl 9)
+end
+
 
 
 /-
