@@ -1,2 +1,2 @@
 # cs-dm
-CS2012 UVa CS Discrete Math Fall 2018
+UVa Software Topic Fall 2018
